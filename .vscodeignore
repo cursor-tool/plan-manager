@@ -1,0 +1,20 @@
+# Source files
+src/**
+**/*.map
+
+# Config files
+.gitignore
+tsconfig.json
+tsconfig.webview.json
+esbuild.mjs
+
+# Dependencies & build output
+package-lock.json
+
+# Development files
+.vscode/**
+**/.DS_Store
+
+# Git & GitHub
+.git/**
+.github/**
