@@ -1,0 +1,207 @@
+{
+  "name": "plan-manager",
+  "displayName": "Plan Manager | Cursor ⇄ Claude",
+  "description": "Browse, search & convert Claude Code / Cursor plan files — plan viewer with Deep Link & one-click AI chat",
+  "version": "0.1.0",
+  "publisher": "pacific-system",
+  "icon": "img/icon.png",
+  "license": "MIT",
+  "homepage": "https://github.com/cursor-tool/plan-manager",
+  "bugs": {
+    "url": "https://github.com/cursor-tool/plan-manager/issues"
+  },
+  "qna": "https://github.com/cursor-tool/plan-manager/issues",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "keywords": [
+    "plan",
+    "claude",
+    "cursor",
+    "ai",
+    "claude-code",
+    "plan-mode",
+    "converter"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cursor-tool/plan-manager.git"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "planManager",
+          "title": "Plan Manager",
+          "icon": "img/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "planManager": [
+        {
+          "id": "planManagerView",
+          "name": "Plan Manager",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "planManager.refreshPlans",
+        "title": "Refresh Plans",
+        "category": "Plan Manager",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "planManager.search",
+        "title": "Search Plans",
+        "category": "Plan Manager",
+        "icon": "$(search)"
+      },
+      {
+        "command": "planManager.clearSearch",
+        "title": "Clear Search",
+        "category": "Plan Manager",
+        "icon": "$(close)"
+      },
+      {
+        "command": "planManager.openInEditor",
+        "title": "Open in Editor",
+        "category": "Plan Manager",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "planManager.openInCursor",
+        "title": "Open in Cursor",
+        "category": "Plan Manager",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "command": "planManager.openInCursorAgent",
+        "title": "Open in Cursor Agent",
+        "category": "Plan Manager"
+      },
+      {
+        "command": "planManager.openInClaude",
+        "title": "Open in Claude",
+        "category": "Plan Manager",
+        "icon": "$(hubot)"
+      },
+      {
+        "command": "planManager.copyPath",
+        "title": "Copy Path",
+        "category": "Plan Manager",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "planManager.convertToCursor",
+        "title": "Convert to Cursor Plan",
+        "category": "Plan Manager",
+        "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "planManager.convertToClaude",
+        "title": "Convert to Claude Plan",
+        "category": "Plan Manager",
+        "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "planManager.revealInOS",
+        "title": "Reveal in File Explorer",
+        "category": "Plan Manager"
+      }
+    ],
+    "menus": {
+      "view/title": []
+    },
+    "configuration": {
+      "title": "Plan Manager",
+      "properties": {
+        "planManager.claudePlansPath": {
+          "type": "string",
+          "default": "~/.claude/plans",
+          "description": "Path to Claude Code plans directory"
+        },
+        "planManager.cursorPlansPath": {
+          "type": "string",
+          "default": "~/.cursor/plans",
+          "description": "Path to Cursor plans directory"
+        },
+        "planManager.additionalScanPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional directories to scan for plan files"
+        },
+        "planManager.autoRefreshEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic refresh of plan list"
+        },
+        "planManager.autoRefreshIntervalSeconds": {
+          "type": "number",
+          "default": 30,
+          "minimum": 5,
+          "maximum": 300,
+          "description": "Auto-refresh interval in seconds"
+        },
+        "planManager.sortBy": {
+          "type": "string",
+          "default": "date",
+          "enum": [
+            "date",
+            "name"
+          ],
+          "enumDescriptions": [
+            "Sort by modification date (newest first)",
+            "Sort by file name (A-Z)"
+          ],
+          "description": "Sort order for plan list"
+        },
+        "planManager.defaultClickAction": {
+          "type": "string",
+          "default": "preview",
+          "enum": [
+            "open",
+            "preview"
+          ],
+          "enumDescriptions": [
+            "Open in editor tab",
+            "Open in preview mode"
+          ],
+          "description": "Default action when clicking a plan item"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "package": "npm run compile && vsce package"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/codicons": "^0.0.45",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.0"
+  }
+}

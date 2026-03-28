@@ -1,0 +1,768 @@
+/* ==========================================================================
+   Plan Manager — WebviewView Styles
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Reset / Base
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--vscode-sideBar-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: 13px;
+  line-height: 1.4;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   2. Split-Pane Container
+   -------------------------------------------------------------------------- */
+.split-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.split-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.split-pane[data-collapsed="true"] {
+  flex: 0 0 auto !important;
+}
+
+.split-pane[data-collapsed="true"] .pane-body {
+  display: none;
+}
+
+/* Empty pane (0 visible cards) — collapsed to header only, distinct from user toggle */
+.split-pane[data-empty="true"] {
+  flex: 0 0 auto !important;
+}
+
+.split-pane[data-empty="true"] .pane-body {
+  display: none;
+}
+
+.pane-header {
+  flex-shrink: 0;
+}
+
+/* First pane header has no top border (directly below search bar) */
+.split-pane:first-child > .pane-header {
+  border-top: none;
+}
+
+/* --------------------------------------------------------------------------
+   2b. Pane Body (replaces old .plan-list as scroll container)
+   -------------------------------------------------------------------------- */
+.pane-body {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* --------------------------------------------------------------------------
+   2c. Resize Handle
+   -------------------------------------------------------------------------- */
+.resize-handle {
+  flex: 0 0 5px;
+  cursor: row-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 0;
+  position: relative;
+  z-index: 5;
+}
+
+.resize-handle::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+}
+
+.resize-handle-bar {
+  width: 32px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--vscode-sideBarSectionHeader-border, var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.3)));
+  transition: background 0.15s ease;
+}
+
+.resize-handle:hover .resize-handle-bar,
+.resize-handle.active .resize-handle-bar {
+  background: var(--vscode-focusBorder);
+}
+
+.resize-handle:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+}
+
+/* Legacy .plan-list selector — kept for scrollbar styles */
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. Plan Card (section 2.6)
+   -------------------------------------------------------------------------- */
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.plan-card:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.plan-card[aria-selected="true"] {
+  background: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+.plan-card:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Line 1 — Title Row (section 2.2)
+   -------------------------------------------------------------------------- */
+.card-line-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--vscode-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.card-date {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   5. Line 2 — Description (section 2.3)
+   -------------------------------------------------------------------------- */
+.card-line-desc {
+  min-height: 18px;
+}
+
+.card-description {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   6. Line 3 — Meta Row (section 2.4)
+   -------------------------------------------------------------------------- */
+.card-line-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-filename {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.card-progress {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  width: 36px;
+  height: 4px;
+  background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.2));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--vscode-progressBar-background);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+.progress-text {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   7. Line 4 — Action Buttons (section 2.5)
+   -------------------------------------------------------------------------- */
+.card-line-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 2px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--vscode-icon-foreground);
+  opacity: 0.6;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.action-btn:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+  opacity: 1;
+}
+
+.action-btn:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.action-separator {
+  width: 1px;
+  height: 16px;
+  background: var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.3));
+  margin: 0 4px;
+  align-self: center;
+}
+
+/* --------------------------------------------------------------------------
+   8. Group Header (section 2.7)
+   -------------------------------------------------------------------------- */
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--vscode-sideBarSectionHeader-foreground, var(--vscode-foreground));
+  background: var(--vscode-sideBarSectionHeader-background, transparent);
+  border-top: 1px solid var(--vscode-sideBarSectionHeader-border, transparent);
+  cursor: pointer;
+  user-select: none;
+  line-height: 22px;
+}
+
+.group-chevron {
+  font-size: 12px;
+  transition: transform 0.15s ease;
+}
+
+.group-header[aria-expanded="false"] .group-chevron {
+  transform: rotate(-90deg);
+}
+
+/* Collapse is now handled by [data-collapsed] on .split-pane */
+
+.group-count {
+  margin-left: auto;
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  line-height: 18px;
+}
+
+/* --------------------------------------------------------------------------
+   9. Search Bar (section 2.8)
+   -------------------------------------------------------------------------- */
+.search-container {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px 4px;
+  background: var(--vscode-sideBar-background);
+}
+
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+  border-radius: 2px;
+  padding: 0 2px 0 6px;
+}
+
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--vscode-input-foreground);
+  font-size: 13px;
+  font-family: var(--vscode-font-family);
+  padding: 3px 0;
+}
+
+.search-input::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+.search-inner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--vscode-icon-foreground);
+  opacity: 0.6;
+  cursor: pointer;
+  border-radius: 3px;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.search-inner-btn:hover {
+  opacity: 1;
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.search-highlight {
+  background: var(--vscode-editor-findMatchHighlightBackground);
+  color: inherit;
+  border-radius: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   9b. Search dropdown menu
+   -------------------------------------------------------------------------- */
+
+.search-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  min-width: 200px;
+  padding: 4px 0;
+  background: var(--vscode-menu-background, var(--vscode-editorWidget-background));
+  color: var(--vscode-menu-foreground, var(--vscode-foreground));
+  border: 1px solid var(--vscode-menu-border, var(--vscode-editorWidget-border));
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.16));
+}
+
+.search-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  color: var(--vscode-menu-foreground, var(--vscode-foreground));
+  font-size: 12px;
+  font-family: var(--vscode-font-family);
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.search-menu-item:hover {
+  background: var(--vscode-menu-selectionBackground, var(--vscode-list-hoverBackground));
+  color: var(--vscode-menu-selectionForeground, var(--vscode-foreground));
+}
+
+.search-menu-separator {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--vscode-menu-separatorBackground, var(--vscode-editorWidget-border));
+}
+
+/* --------------------------------------------------------------------------
+   10. Context Menu (section 3.3)
+   -------------------------------------------------------------------------- */
+.context-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 180px;
+  padding: 4px 0;
+  background: var(--vscode-menu-background, var(--vscode-editorWidget-background));
+  color: var(--vscode-menu-foreground, var(--vscode-foreground));
+  border: 1px solid var(--vscode-menu-border, var(--vscode-editorWidget-border));
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.16));
+}
+
+.context-menu[hidden] {
+  display: none;
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  padding: 4px 24px 4px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.context-menu-item:hover,
+.context-menu-item:focus-visible {
+  background: var(--vscode-menu-selectionBackground);
+  color: var(--vscode-menu-selectionForeground);
+}
+
+.context-menu-separator {
+  height: 1px;
+  margin: 4px 8px;
+  background: var(--vscode-menu-separatorBackground, var(--vscode-editorWidget-border));
+}
+
+/* --------------------------------------------------------------------------
+   11. Empty State (section 2.9)
+   -------------------------------------------------------------------------- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+  gap: 8px;
+}
+
+.empty-state-icon {
+  font-size: 32px;
+  opacity: 0.6;
+}
+
+.empty-state-title {
+  font-size: 13px;
+  margin: 0;
+}
+
+.empty-state-detail {
+  font-size: 12px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.empty-state-link {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+
+.empty-state-link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   12. Scrollbar (section 2.10)
+   -------------------------------------------------------------------------- */
+.plan-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.plan-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.plan-list::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.plan-list:hover::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+.plan-list::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* --------------------------------------------------------------------------
+   13. High Contrast
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .plan-card:focus-visible,
+  .plan-card[aria-selected="true"] {
+    outline: 2px solid Highlight;
+  }
+
+  .action-btn:focus-visible {
+    outline: 2px solid Highlight;
+  }
+
+  .progress-fill {
+    background: Highlight;
+  }
+
+  .resize-handle-bar {
+    background: ButtonText;
+  }
+
+  .resize-handle:hover .resize-handle-bar {
+    background: Highlight;
+  }
+
+  .card-tooltip[data-position="below"]::before { border-bottom-color: CanvasText; }
+  .card-tooltip[data-position="above"]::before { border-top-color: CanvasText; }
+  .card-tooltip[data-position="below"]::after { border-bottom-color: Canvas; }
+  .card-tooltip[data-position="above"]::after { border-top-color: Canvas; }
+}
+
+/* --------------------------------------------------------------------------
+   14. Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .group-chevron,
+  .progress-fill,
+  .resize-handle-bar {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   15. Tooltips (JS-controlled with .visible class + CSS :hover for buttons)
+   -------------------------------------------------------------------------- */
+.plan-card {
+  position: relative;
+}
+
+.card-tooltip {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  overflow: visible;
+  pointer-events: none;
+  background: var(--vscode-editorHoverWidget-background, var(--vscode-editorWidget-background));
+  color: var(--vscode-editorHoverWidget-foreground, var(--vscode-foreground));
+  border: 2px solid var(--vscode-editorHoverWidget-border, var(--vscode-editorWidget-border));
+  border-radius: 3px;
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.16));
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.card-tooltip.visible {
+  display: block;
+}
+
+.card-tooltip-content {
+  padding: 8px 12px;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* --- Below card: upward triangle ▲ --- */
+.card-tooltip[data-position="below"]::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 16px;
+  border: 8px solid transparent;
+  border-top: none;
+  border-bottom-color: var(--vscode-editorHoverWidget-border, var(--vscode-editorWidget-border));
+}
+
+.card-tooltip[data-position="below"]::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 18px;
+  border: 6px solid transparent;
+  border-top: none;
+  border-bottom-color: var(--vscode-editorHoverWidget-background, var(--vscode-editorWidget-background));
+}
+
+/* --- Above card: downward triangle ▼ --- */
+.card-tooltip[data-position="above"]::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 16px;
+  border: 8px solid transparent;
+  border-bottom: none;
+  border-top-color: var(--vscode-editorHoverWidget-border, var(--vscode-editorWidget-border));
+}
+
+.card-tooltip[data-position="above"]::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 18px;
+  border: 6px solid transparent;
+  border-bottom: none;
+  border-top-color: var(--vscode-editorHoverWidget-background, var(--vscode-editorWidget-background));
+}
+
+.tooltip-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.tooltip-row {
+  margin: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip-label {
+  color: var(--vscode-descriptionForeground);
+}
+
+.tooltip-value {
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+}
+
+.tooltip-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.tooltip-progress-bar {
+  display: inline-block;
+  width: 80px;
+  height: 6px;
+  background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.2));
+  border-radius: 3px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.tooltip-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--vscode-progressBar-background);
+  border-radius: 3px;
+}
+
+.tooltip-sep {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--vscode-editorHoverWidget-border, var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.3)));
+}
+
+.tooltip-desc {
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+  white-space: pre-wrap;
+  max-height: 100px;
+  overflow: hidden;
+}
+
+/* --- Button tooltip (simple, CSS :hover instant) --- */
+.action-btn {
+  position: relative;
+}
+
+.btn-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2001;
+  padding: 3px 6px;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: 11px;
+  background: var(--vscode-editorHoverWidget-background, var(--vscode-editorWidget-background));
+  color: var(--vscode-editorHoverWidget-foreground, var(--vscode-foreground));
+  border: 1px solid var(--vscode-editorHoverWidget-border, var(--vscode-editorWidget-border));
+  border-radius: 3px;
+  box-shadow: 0 1px 4px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.16));
+}
+
+.action-btn:hover > .btn-tooltip {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   16. Utility
+   -------------------------------------------------------------------------- */
+.hidden {
+  display: none !important;
+}
