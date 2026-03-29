@@ -188,7 +188,17 @@ export class PlanWebviewViewProvider implements vscode.WebviewViewProvider, vsco
     <div class="context-menu-separator" role="separator"></div>
     <button class="context-menu-item" role="menuitem" data-action="openInEditor">Open in Editor</button>
     <button class="context-menu-item" role="menuitem" data-action="openInCursor">Open in Cursor</button>
-    <button class="context-menu-item" role="menuitem" data-action="openInCursorAgent">Open in Cursor Agent</button>
+    <!--
+      [DISABLED 2026-03-29] openInCursorAgent — terminal.sendText() によるエージェント起動を一時非表示。
+      理由: createTerminal + sendText はシェル環境に依存し、クロスプラットフォーム対応が構造的に困難。
+        - H2(検証済み): PowerShell のエスケープ文字は backtick であり bash 用の \ エスケープが逆効果
+        - H4(検証済み): waitForShellReady 2秒タイムアウトが PowerShell/oh-my-zsh 環境で不足
+        - sendText() は fire-and-forget で成功/失敗のフィードバック不可
+      代替: openInCursor (Deep Link) が安全な手段として存在する。
+      再有効化の条件: TerminalShellIntegration.executeCommand() (VS Code 1.93+) への移行 + シェル別エスケープ対応。
+      検証エビデンス: ~/.claude/plans/indexed-noodling-forest.md
+    -->
+    <!-- <button class="context-menu-item" role="menuitem" data-action="openInCursorAgent">Open in Cursor Agent</button> -->
     <button class="context-menu-item" role="menuitem" data-action="openInClaude">Open in Claude</button>
     <div class="context-menu-separator" role="separator"></div>
     <button class="context-menu-item" role="menuitem" data-action="copyPath">Copy Path</button>

@@ -89,7 +89,6 @@ Each plan card has action icons at the bottom. From left to right:
 - ✅ **変換** — Claude ↔ Cursor 相互 convert<br>**Convert** — Bi-directional Claude ↔ Cursor conversion
 - ✅ **エディタで開く** — Markdown をエディタで表示<br>**Open in Editor** — View Markdown in editor
 - ✅ **Cursor で開く** — Cursor 用 deep link プロンプトをコピー<br>**Open in Cursor** — Copy deep link prompt for Cursor
-- ✅ **Cursor Agent で開く** — Agent モードで開く<br>**Open in Cursor Agent** — Open in Agent mode
 - ✅ **Claude で開く** — Claude Code plan mode で起動<br>**Open in Claude** — Launch Claude Code in plan mode
 - ｜ *セパレータ*
 - ✅ **パスコピー** — フルパスをクリップボードにコピー<br>**Copy Path** — Copy full path to clipboard
@@ -99,8 +98,8 @@ Each plan card has action icons at the bottom. From left to right:
 
 ## 🔗 プランを開く / Open Plans
 
-プランの開き方は5種類あります。用途に応じて使い分けてください。<br>
-There are 5 ways to open a plan. Choose based on your use case.
+プランの開き方は4種類あります。用途に応じて使い分けてください。<br>
+There are 4 ways to open a plan. Choose based on your use case.
 
 ### 1. エディタで開く / Open in Editor
 
@@ -112,17 +111,12 @@ Click a plan card, or right-click → "Open in Editor" to view the Markdown in t
 右クリック → 「Cursor で開く」で Deep Link URI (`cursor://`) を通じて Cursor に直接プロンプトを送信します。ワンクリックでプランが開きます。バックアップとしてクリップボードにもコピーされます。<br>
 Right-click → "Open in Cursor" sends the prompt directly to Cursor via Deep Link URI (`cursor://`). One click opens the plan. The prompt is also copied to clipboard as a backup.
 
-### 3. Cursor Agent で開く / Open in Cursor Agent
-
-右クリック → 「Cursor Agent で開く」でターミナルに Agent コマンドを直接送信します。<br>
-Right-click → "Open in Cursor Agent" sends the agent command directly to a terminal.
-
-### 4. Claude で開く / Open in Claude
+### 3. Claude で開く / Open in Claude
 
 右クリック → 「Claude で開く」でワンクリック起動します。Claude Code 拡張がインストール済みなら直接 plan mode で開きます。未インストールの場合はターミナルで CLI を起動します。<br>
 Right-click → "Open in Claude" launches with one click. If the Claude Code extension is installed, it opens directly in plan mode. Otherwise, it launches the CLI in a terminal.
 
-### 5. Finder で表示 / Reveal in Finder
+### 4. Finder で表示 / Reveal in Finder
 
 右クリック → 「Finder で表示」で OS のファイルマネージャーでプランファイルの場所を開きます。<br>
 Right-click → "Reveal in Finder" opens the plan file location in your OS file manager.
@@ -167,7 +161,6 @@ Conversion completes in one click without modifying the original file. The conve
 | `Plan Manager: Search Plans` | キーワードで search | Search plans by keyword | パレット / Palette |
 | `Plan Manager: Open in Editor` | MD をエディタで開く | Open MD in editor | カードクリック / Card click |
 | `Plan Manager: Open in Cursor` | Cursor に deep link 送信 | Send deep link to Cursor | カードアイコン / Card icon |
-| `Plan Manager: Open in Cursor Agent` | Agent モードで開く | Open in Agent mode | カードアイコン / Card icon |
 | `Plan Manager: Open in Claude` | Claude plan mode で開く | Open in Claude plan mode | カードアイコン / Card icon |
 | `Plan Manager: Copy Path` | フルパスをコピー | Copy full path | カードアイコン / Card icon |
 | `Plan Manager: Convert to Cursor Plan` | Claude → Cursor 変換 | Convert Claude → Cursor | カードアイコン / Card icon |
