@@ -2,7 +2,7 @@
   "name": "plan-manager",
   "displayName": "Plan Manager | Cursor ⇄ Claude",
   "description": "Browse, search & convert Claude Code / Cursor plan files — plan viewer with Deep Link & one-click AI chat",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "pacific-system",
   "icon": "img/icon.png",
   "license": "MIT",
@@ -170,19 +170,6 @@
             "Sort by file name (A-Z)"
           ],
           "description": "Sort order for plan list"
-        },
-        "planManager.defaultClickAction": {
-          "type": "string",
-          "default": "preview",
-          "enum": [
-            "open",
-            "preview"
-          ],
-          "enumDescriptions": [
-            "Open in editor tab",
-            "Open in preview mode"
-          ],
-          "description": "Default action when clicking a plan item"
         }
       }
     }

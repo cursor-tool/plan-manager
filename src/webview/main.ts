@@ -35,7 +35,7 @@ type HostToWebviewMessage =
   | { type: 'plansLoaded'; plans: SerializedPlanFile[] }
   | { type: 'focusSearch' }
   | { type: 'clearSearch' }
-  | { type: 'configChanged'; sortBy: string; defaultClickAction: string }
+  | { type: 'configChanged'; sortBy: string }
   | ({ type: 'restoreState' } & PersistedWebviewState)
   | { type: 'commandError'; command: string; planId: string; message: string }
 
@@ -166,7 +166,6 @@ const vscode = acquireVsCodeApi()
 
 // Cached references
 let allPlans: SerializedPlanFile[] = []
-let defaultClickAction = 'openInEditor'
 let currentContextPlanId: string | null = null
 
 // DOM references (populated after DOMContentLoaded)
@@ -258,7 +257,6 @@ window.addEventListener('message', (event: MessageEvent<HostToWebviewMessage>) =
       break
 
     case 'configChanged':
-      defaultClickAction = msg.defaultClickAction || 'openInEditor'
       break
 
     case 'restoreState':
@@ -480,7 +478,7 @@ function createPlanCard(plan: SerializedPlanFile): HTMLElement {
 
   const buttons: Array<{ action: string; tip: string; icon: string }> = [
     { action: convertAction, tip: t('convert'), icon: 'codicon-arrow-swap' },
-    { action: 'openInEditor', tip: t('editor'), icon: 'codicon-go-to-file' },
+    { action: 'openInPreview', tip: t('editor'), icon: 'codicon-go-to-file' },
     { action: 'openInCursor', tip: t('cursor'), icon: 'codicon-terminal-bash' },
     { action: 'openInCursorAgent', tip: t('agent'), icon: 'codicon-hubot' },
     { action: 'openInClaude', tip: t('claude'), icon: 'codicon-comment-discussion' },
@@ -1014,7 +1012,7 @@ function setupActionListeners(): void {
       focusCard(card)
       vscode.postMessage({
         type: 'command',
-        command: defaultClickAction,
+        command: 'openInPreview',
         planId: card.dataset.planId,
       })
     }

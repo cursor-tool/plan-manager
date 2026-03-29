@@ -186,7 +186,6 @@ Conversion completes in one click without modifying the original file. The conve
 | `planManager.autoRefreshEnabled` | 自動更新 | Auto refresh | `true` |
 | `planManager.autoRefreshIntervalSeconds` | 更新間隔（秒） | Refresh interval (sec) | `30` |
 | `planManager.sortBy` | ソート基準 | Sort order | `"date"` |
-| `planManager.defaultClickAction` | クリック動作 | Click action | `"preview"` |
 
 ---
 

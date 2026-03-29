@@ -311,6 +311,7 @@ body {
   background: var(--vscode-sideBarSectionHeader-background, transparent);
   border-top: 1px solid var(--vscode-sideBarSectionHeader-border, transparent);
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   line-height: 22px;
 }

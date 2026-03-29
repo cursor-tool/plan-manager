@@ -57,7 +57,7 @@ export type HostToWebviewMessage =
   | { type: 'plansLoaded'; plans: SerializedPlanFile[] }
   | { type: 'focusSearch' }
   | { type: 'clearSearch' }
-  | { type: 'configChanged'; sortBy: string; defaultClickAction: string }
+  | { type: 'configChanged'; sortBy: string }
   | ({ type: 'restoreState' } & PersistedWebviewState)
   | { type: 'commandError'; command: string; planId: string; message: string }
 

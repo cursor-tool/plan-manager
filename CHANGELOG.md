@@ -5,6 +5,18 @@ All notable changes to "Plan Manager" will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-03-29
+
+### Fixed
+
+- カード本体のシングルクリックでプランが開けない問題を修正
+  Fix single-click on plan card not opening the file
+
+### Removed
+
+- `planManager.defaultClickAction` 設定を廃止（シングルクリックは常にプレビュー表示に統一）
+  Remove `planManager.defaultClickAction` setting (single-click now always opens preview)
+
 ## [0.1.1] - 2026-03-29
 
 ### Fixed

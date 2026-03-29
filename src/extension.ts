@@ -64,14 +64,18 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('planManager.openInEditor', (planIdOrItem: string | any) => {
       const plan = resolvePlan(planIdOrItem)
       if (!plan) return
-      const config = vscode.workspace.getConfiguration('planManager')
-      const action = config.get<string>('defaultClickAction', 'preview')
       const uri = vscode.Uri.file(plan.filePath)
-      if (action === 'preview') {
-        vscode.commands.executeCommand('markdown.showPreview', uri)
-      } else {
-        vscode.window.showTextDocument(uri)
-      }
+      vscode.window.showTextDocument(uri)
+    }),
+  )
+
+  // Open in preview (markdown preview)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('planManager.openInPreview', (planIdOrItem: string | any) => {
+      const plan = resolvePlan(planIdOrItem)
+      if (!plan) return
+      const uri = vscode.Uri.file(plan.filePath)
+      vscode.commands.executeCommand('markdown.showPreview', uri)
     }),
   )
 
@@ -180,7 +184,7 @@ export function activate(context: vscode.ExtensionContext): void {
   // --- Phase C: Configuration change listener ---
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('planManager.sortBy') || e.affectsConfiguration('planManager.defaultClickAction')) {
+      if (e.affectsConfiguration('planManager.sortBy')) {
         webviewProvider.sendConfig()
         webviewProvider.refresh()
       }

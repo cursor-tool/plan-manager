@@ -277,9 +277,8 @@ export class PlanWebviewViewProvider implements vscode.WebviewViewProvider, vsco
 
     const config = vscode.workspace.getConfiguration('planManager')
     const sortBy = config.get<string>('sortBy', 'date')
-    const defaultClickAction = config.get<string>('defaultClickAction', 'openInEditor')
 
-    this._view.webview.postMessage({ type: 'configChanged', sortBy, defaultClickAction })
+    this._view.webview.postMessage({ type: 'configChanged', sortBy })
   }
 
   // -----------------------------------------------------------------------
