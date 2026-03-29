@@ -3,6 +3,7 @@ import { PlanDiscoveryService } from './services/planDiscoveryService'
 import { PlanWebviewViewProvider } from './services/webviewViewProvider'
 import { convertClaudeToCursor, convertCursorToClaude } from './services/conversionService'
 import { PlanFile, PlanSource } from './types/plan'
+import { toForwardSlash } from './utils/pathUtils'
 
 // Environment detection
 const isCursor = vscode.env.uriScheme === 'cursor'
@@ -107,9 +108,9 @@ export function activate(context: vscode.ExtensionContext): void {
       const terminal = vscode.window.createTerminal('Cursor Agent Plan')
       terminal.show()
       await waitForShellReady(terminal)
-      const ws = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? ''
+      const ws = toForwardSlash(vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '')
       terminal.sendText(
-        `agent --plan --workspace "${ws}" "Read and execute the plan at ${plan.filePath}. Follow the todos in the YAML frontmatter."`,
+        `agent --plan --workspace "${ws}" "Read and execute the plan at ${toForwardSlash(plan.filePath)}. Follow the todos in the YAML frontmatter."`,
       )
     }),
   )
@@ -119,14 +120,15 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('planManager.openInClaude', async (planIdOrItem: string | any) => {
       const plan = resolvePlan(planIdOrItem)
       if (!plan) return
-      const prompt = `Read and continue the plan at ${plan.filePath}. Follow all tasks listed in the plan.`
-
       if (isClaudeInstalled) {
+        const prompt = `Read and continue the plan at ${plan.filePath}. Follow all tasks listed in the plan.`
         await vscode.commands.executeCommand('claude-vscode.editor.open', undefined, prompt)
         return
       }
 
       // Fallback: terminal CLI
+      const safePath = toForwardSlash(plan.filePath)
+      const prompt = `Read and continue the plan at ${safePath}. Follow all tasks listed in the plan.`
       const terminal = vscode.window.createTerminal('Claude Code Plan')
       terminal.show()
       await waitForShellReady(terminal)
