@@ -5,6 +5,22 @@ All notable changes to "Plan Manager" will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-03-31
+
+### Improved
+
+- エージェント連携プロンプトを構造化テンプレートに刷新（変換指示・QA検証・実行の3ステップ）
+  Restructure agent prompts with step-by-step templates (validate, convert, execute)
+- プロンプトのロケール対応（日本語IDE環境で日本語プロンプトを生成）
+  Add locale-aware prompt generation (Japanese prompts for `ja` locale)
+- 変換先パスをユーザー設定 (`cursorPlansPath` / `claudePlansPath`) から動的取得
+  Use user-configured plan directories instead of hardcoded paths
+
+### Fixed
+
+- ターミナル送信時に改行がシェルのコマンド区切りとして解釈される問題を修正
+  Fix newlines in shell-escaped prompts breaking terminal commands
+
 ## [0.1.3] - 2026-03-29
 
 ### Fixed

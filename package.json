@@ -2,7 +2,7 @@
   "name": "plan-manager",
   "displayName": "Plan Manager | Cursor ⇄ Claude",
   "description": "Browse, search & convert Claude Code / Cursor plan files — plan viewer with Deep Link & one-click AI chat",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "publisher": "pacific-system",
   "icon": "img/icon.png",
   "license": "MIT",
