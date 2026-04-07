@@ -57,6 +57,7 @@ The Plan Manager icon appears in the Activity Bar. Click to open and browse the 
 - ↕️ **ソート** — 名前順 / 日付順 / サイズ順で browse<br>**Sort** — Browse by name, date, or size
 - 📂 **Finder で表示** — OS ファイルマネージャーで直接開く<br>**Reveal in Finder** — Open directly in OS file manager
 - ♻️ **自動更新** — ファイルシステム監視でリアルタイム更新<br>**Auto Refresh** — Real-time update via filesystem watching
+- 🔗 **Issue 連携** — プラン内容を GitHub / GitLab の Issue に直接送信（新規作成 / 既存 Issue へのコメント追加）<br>**Issue Integration** — Send plan content directly to GitHub / GitLab Issues (create new or comment on existing)
 - 🌐 **i18n** — 日本語 / English（VS Code のロケール設定に自動追従。メニューラベル・ボタンツールチップが対象）<br>**i18n** — Japanese / English (auto-follows VS Code locale for menu labels and button tooltips)
 
 ---
@@ -93,6 +94,7 @@ Each plan card has action icons at the bottom. From left to right:
 - ｜ *セパレータ*
 - ✅ **パスコピー** — フルパスをクリップボードにコピー<br>**Copy Path** — Copy full path to clipboard
 - ✅ **Finder で表示** — OS ファイルマネージャーで開く<br>**Reveal in Finder** — Open in OS file manager
+- ✅ **Issue に追加** — プラン内容を GitHub / GitLab の Issue に送信<br>**Add to Issue** — Send plan content to a GitHub / GitLab Issue
 
 ---
 
@@ -166,6 +168,9 @@ Conversion completes in one click without modifying the original file. The conve
 | `Plan Manager: Convert to Cursor Plan` | Claude → Cursor 変換 | Convert Claude → Cursor | カードアイコン / Card icon |
 | `Plan Manager: Convert to Claude Plan` | Cursor → Claude 変換 | Convert Cursor → Claude | カードアイコン / Card icon |
 | `Plan Manager: Reveal in File Explorer` | Finder で表示 | Reveal in Finder | カードアイコン / Card icon |
+| `Plan Manager: Add to Issue` | プラン内容を Issue に送信 | Send plan to Issue | カードアイコン / Card icon |
+| `Plan Manager: Set GitHub Token` | GitHub PAT を保存 | Save GitHub PAT | パレット / Palette |
+| `Plan Manager: Set GitLab Token` | GitLab PAT を保存 | Save GitLab PAT | パレット / Palette |
 
 ---
 
@@ -179,6 +184,51 @@ Conversion completes in one click without modifying the original file. The conve
 | `planManager.autoRefreshEnabled` | 自動更新 | Auto refresh | `true` |
 | `planManager.autoRefreshIntervalSeconds` | 更新間隔（秒） | Refresh interval (sec) | `30` |
 | `planManager.sortBy` | ソート基準 | Sort order | `"date"` |
+| `planManager.gitlabBaseUrl` | GitLab ベース URL | GitLab base URL | `"https://gitlab.com"` |
+
+---
+
+## 🔑 Issue 連携の設定 / Issue Integration Setup
+
+プラン内容を GitHub / GitLab の Issue に送信するには、Personal Access Token (PAT) が必要です。<br>
+To send plan content to GitHub / GitLab Issues, you need a Personal Access Token (PAT).
+
+### GitHub PAT の取得 / Getting a GitHub PAT
+
+GitHub は **Classic token** が必須です。Fine-grained token は Organization リポジトリで権限不足になる場合があります。<br>
+GitHub requires a **Classic token**. Fine-grained tokens may lack sufficient permissions for Organization repositories.
+
+1. https://github.com/settings/tokens を開く / Open the link
+2. **Generate new token** → **Generate new token (classic)** を選択 / Select this option
+3. **Note**: `plan-manager` など識別しやすい名前を入力 / Enter a recognizable name like `plan-manager`
+4. **Expiration**: 用途に応じて選択（推奨: 90 days） / Choose based on your needs (recommended: 90 days)
+5. **Scopes**: **`repo`** にチェック（private リポジトリの Issue 作成・コメントに必要） / Check **`repo`** (required for Issue creation and commenting on private repositories)
+6. **Generate token** → 表示されたトークン (`ghp_...`) をコピー / Copy the displayed token (`ghp_...`)
+7. コマンドパレット → `Plan Manager: Set GitHub Token` → 貼り付けて Enter / Paste and press Enter
+
+> **注意**: トークンは一度しか表示されません。コピーし忘れた場合は再生成してください。<br>
+> **Note**: The token is displayed only once. If you miss it, regenerate a new one.
+
+### GitLab PAT の取得 / Getting a GitLab PAT
+
+1. GitLab → **Settings** → **Access Tokens** → **Personal Access Tokens** を開く / Open the page
+2. **Token name**: `plan-manager` など識別しやすい名前を入力 / Enter a recognizable name
+3. **Expiration date**: 用途に応じて選択 / Choose based on your needs
+4. **Scopes**: **`api`** にチェック（Issues API に必要） / Check **`api`** (required for Issues API)
+5. **Create personal access token** → 表示されたトークン (`glpat-...`) をコピー / Copy the displayed token (`glpat-...`)
+6. コマンドパレット → `Plan Manager: Set GitLab Token` → 貼り付けて Enter / Paste and press Enter
+
+> **Self-hosted GitLab**: `planManager.gitlabBaseUrl` に自社 GitLab の URL を設定してください（例: `https://gitlab.yourcompany.com`）。`https://` のみ対応しています。<br>
+> **Self-hosted GitLab**: Set your GitLab URL in `planManager.gitlabBaseUrl` (e.g., `https://gitlab.yourcompany.com`). Only `https://` is supported.
+
+### トークンの保存と管理 / Token Storage and Management
+
+- トークンは VS Code の **SecretStorage**（OS キーチェーン連携）に安全に保存されます。設定ファイルやログには記録されません。<br>
+  Tokens are securely stored in VS Code's **SecretStorage** (OS keychain integration). They are never written to settings files or logs.
+- トークンは拡張機能の再起動後も保持されます。再入力は不要です。<br>
+  Tokens persist across extension restarts. No re-entry is needed.
+- 無効なトークン（401 エラー）は自動的に削除され、再入力が求められます。<br>
+  Invalid tokens (401 errors) are automatically deleted, and you will be prompted to re-enter.
 
 ---
 

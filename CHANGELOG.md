@@ -5,6 +5,36 @@ All notable changes to "Plan Manager" will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-04-08
+
+### Added
+
+- Issue 連携: プラン内容を GitHub / GitLab の Issue に直接送信（新規作成 / 既存 Issue へのコメント追加）
+  Issue Integration: Send plan content directly to GitHub / GitLab Issues (create new or comment on existing)
+- GitHub / GitLab の PAT (Personal Access Token) を SecretStorage に保存・再利用
+  Store and reuse GitHub / GitLab PATs via SecretStorage
+- `Set GitHub Token` / `Set GitLab Token` コマンドをコマンドパレットに追加
+  Add `Set GitHub Token` / `Set GitLab Token` commands to Command Palette
+- `Add to Issue` ボタンをカードアクションバーに追加（codicon-issue-opened アイコン）
+  Add `Add to Issue` button to card action bar (codicon-issue-opened icon)
+- カード右クリックメニューに「Issue に追加」を追加
+  Add "Add to Issue" to card context menu
+- Git remote 自動検出（plan ファイルパス優先 → ワークスペース走査）
+  Auto-detect Git remotes (plan file path priority, then workspace scan)
+- 複数リポジトリ候補時の QuickPick 選択
+  QuickPick selection when multiple repository candidates are found
+- Self-hosted GitLab 対応（`planManager.gitlabBaseUrl` 設定）
+  Self-hosted GitLab support via `planManager.gitlabBaseUrl` setting
+- エラーコード別の UI ハンドリング（PlanManagerError による構造化エラー）
+  Code-based error UI handling via PlanManagerError
+
+### Fixed
+
+- 同一リポジトリが大文字/小文字違いで重複表示される問題を修正（dedup キーを case-insensitive に）
+  Fix duplicate repository entries caused by case-sensitive dedup key
+- GitLab ホスト名の大文字/小文字が `.git/config` と設定値で異なる場合にマッチしない問題を修正
+  Fix GitLab hostname comparison failing when `.git/config` uses different casing
+
 ## [0.1.4] - 2026-03-31
 
 ### Improved

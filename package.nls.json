@@ -1,0 +1,6 @@
+{
+  "commands.addToIssue.title": "Add to Issue",
+  "commands.setGitHubToken.title": "Set GitHub Token (PAT)",
+  "commands.setGitLabToken.title": "Set GitLab Token (PAT)",
+  "settings.gitlabBaseUrl.description": "Base URL for self-hosted GitLab (HTTPS only). Example: https://gitlab.example.com"
+}

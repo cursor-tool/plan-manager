@@ -1,4 +1,15 @@
-export type ErrorCode = 'FILE_NOT_FOUND' | 'PARSE_ERROR' | 'CONVERSION_ERROR' | 'WATCH_ERROR'
+export type ErrorCode =
+  | 'FILE_NOT_FOUND'
+  | 'PARSE_ERROR'
+  | 'CONVERSION_ERROR'
+  | 'WATCH_ERROR'
+  | 'GIT_REMOTE_NOT_FOUND'
+  | 'UNSUPPORTED_REMOTE'
+  | 'INVALID_GITLAB_BASE_URL'
+  | 'AUTH_REQUIRED'
+  | 'AUTH_INVALID'
+  | 'API_REQUEST_FAILED'
+  | 'NETWORK_ERROR'
 
 export class PlanManagerError extends Error {
   constructor(

@@ -203,6 +203,8 @@ export class PlanWebviewViewProvider implements vscode.WebviewViewProvider, vsco
     <div class="context-menu-separator" role="separator"></div>
     <button class="context-menu-item" role="menuitem" data-action="copyPath">Copy Path</button>
     <button class="context-menu-item" role="menuitem" data-action="revealInOS">Reveal in File Explorer</button>
+    <div class="context-menu-separator" role="separator"></div>
+    <button class="context-menu-item" role="menuitem" data-action="addToIssue">${locale === 'ja' ? 'Issue に追加' : 'Add to Issue'}</button>
   </div>
 
   <script nonce="${nonce}" src="${mainJsUri}"></script>

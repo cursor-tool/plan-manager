@@ -3,7 +3,13 @@ import { PlanDiscoveryService } from './services/planDiscoveryService'
 import { PlanWebviewViewProvider } from './services/webviewViewProvider'
 import { convertClaudeToCursor, convertCursorToClaude } from './services/conversionService'
 import { PlanFile, PlanSource } from './types/plan'
+import { RepoInfo } from './types/issue'
 import { toForwardSlash } from './utils/pathUtils'
+import { extractH1 } from './utils/markdownParser'
+import { detectRepoCandidates } from './services/gitRemoteService'
+import { ensureValidToken, promptForToken, setToken, validateGitLabBaseUrl } from './services/authService'
+import { getIssueProvider } from './services/issueService'
+import { PlanManagerError } from './errors/planManagerError'
 
 // Environment detection
 const isCursor = vscode.env.uriScheme === 'cursor'
@@ -14,6 +20,73 @@ type Locale = 'en' | 'ja'
 function getLocale(): Locale {
   return vscode.env.language === 'ja' ? 'ja' : 'en'
 }
+
+// ---------------------------------------------------------------------------
+// i18n messages for Issue integration
+// ---------------------------------------------------------------------------
+
+const issueI18n = {
+  noPlan: {
+    en: 'Please run this command from a plan card.',
+    ja: 'プランカードからこのコマンドを実行してください。',
+  },
+  noRepoCandidates: {
+    en: 'No GitHub or GitLab repository found in the workspace.',
+    ja: 'ワークスペース内に GitHub / GitLab リポジトリが見つかりませんでした。',
+  },
+  selectRepo: {
+    en: 'Select a repository',
+    ja: 'リポジトリを選択',
+  },
+  selectAction: {
+    en: 'Select an action',
+    ja: 'アクションを選択',
+  },
+  actionNewIssue: {
+    en: 'Create new Issue',
+    ja: '新規 Issue を作成',
+  },
+  actionAddComment: {
+    en: 'Add comment to existing Issue',
+    ja: '既存 Issue にコメントを追加',
+  },
+  selectIssue: {
+    en: 'Select an Issue',
+    ja: 'Issue を選択',
+  },
+  noOpenIssues: {
+    en: 'No open Issues found in this repository.',
+    ja: 'このリポジトリにオープンな Issue がありません。',
+  },
+  truncatedWarning: {
+    en: 'Showing the most recent 100 issues only.',
+    ja: '最新 100 件のみ表示しています。',
+  },
+  createdSuccess: {
+    en: (num: number) => `Issue #${num} created successfully.`,
+    ja: (num: number) => `Issue #${num} を作成しました。`,
+  },
+  commentSuccess: {
+    en: (num: number) => `Comment added to Issue #${num}.`,
+    ja: (num: number) => `Issue #${num} にコメントを追加しました。`,
+  },
+  openInBrowser: {
+    en: 'Open in Browser',
+    ja: 'ブラウザで開く',
+  },
+  fetchingIssues: {
+    en: 'Fetching open issues…',
+    ja: 'Issue 一覧を取得中…',
+  },
+  tokenSaved: {
+    en: (platform: string) => `${platform} token saved.`,
+    ja: (platform: string) => `${platform} トークンを保存しました。`,
+  },
+  keychainError: {
+    en: 'Could not access the system keychain. Please check your OS security settings.',
+    ja: 'システムキーチェーンにアクセスできません。OS のセキュリティ設定を確認してください。',
+  },
+} as const
 
 export function activate(context: vscode.ExtensionContext): void {
   console.log('Plan Manager: activating...')
@@ -184,6 +257,183 @@ export function activate(context: vscode.ExtensionContext): void {
       const plan = resolvePlan(planIdOrItem)
       if (!plan) return
       vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(plan.filePath))
+    }),
+  )
+
+  // --- Issue integration commands ---
+
+  // Set GitHub Token
+  context.subscriptions.push(
+    vscode.commands.registerCommand('planManager.setGitHubToken', async () => {
+      const locale = getLocale()
+      try {
+        const token = await promptForToken('github')
+        if (!token) return
+        await setToken(context.secrets, 'github', token)
+        vscode.window.showInformationMessage(issueI18n.tokenSaved[locale]('GitHub'))
+      } catch (err) {
+        console.error('Plan Manager: setGitHubToken failed:', err)
+        vscode.window.showErrorMessage(issueI18n.keychainError[locale])
+      }
+    }),
+  )
+
+  // Set GitLab Token
+  context.subscriptions.push(
+    vscode.commands.registerCommand('planManager.setGitLabToken', async () => {
+      const locale = getLocale()
+      try {
+        const token = await promptForToken('gitlab')
+        if (!token) return
+        await setToken(context.secrets, 'gitlab', token)
+        vscode.window.showInformationMessage(issueI18n.tokenSaved[locale]('GitLab'))
+      } catch (err) {
+        console.error('Plan Manager: setGitLabToken failed:', err)
+        vscode.window.showErrorMessage(issueI18n.keychainError[locale])
+      }
+    }),
+  )
+
+  // Add to Issue
+  context.subscriptions.push(
+    vscode.commands.registerCommand('planManager.addToIssue', async (planIdOrItem: string | any) => {
+      const locale = getLocale()
+      const plan = resolvePlan(planIdOrItem)
+      if (!plan) {
+        vscode.window.showWarningMessage(issueI18n.noPlan[locale])
+        return
+      }
+
+      try {
+        // --- 1. Validate GitLab base URL (even if we end up using GitHub) ---
+        const rawGitlabBaseUrl = vscode.workspace
+          .getConfiguration('planManager')
+          .get<string>('gitlabBaseUrl', 'https://gitlab.com')
+        const gitlabBaseUrl = validateGitLabBaseUrl(rawGitlabBaseUrl)
+
+        // --- 2. Detect repository candidates ---
+        const candidates = await detectRepoCandidates(
+          plan.filePath,
+          vscode.workspace.workspaceFolders,
+          gitlabBaseUrl,
+        )
+        if (candidates.length === 0) {
+          vscode.window.showWarningMessage(issueI18n.noRepoCandidates[locale])
+          return
+        }
+
+        // --- 3. Select repository ---
+        let repo: RepoInfo
+        if (candidates.length === 1) {
+          repo = candidates[0]
+        } else {
+          const picked = await vscode.window.showQuickPick(
+            candidates.map((c) => ({
+              label: c.displayName,
+              description: c.remoteName,
+              candidate: c,
+            })),
+            { placeHolder: issueI18n.selectRepo[locale] },
+          )
+          if (!picked) return
+          repo = picked.candidate
+        }
+
+        // --- 4. Authenticate ---
+        const provider = getIssueProvider(repo.platform)
+        const token = await ensureValidToken(context.secrets, repo, provider)
+        if (!token) return // user cancelled
+
+        // --- 5. Build title and body ---
+        const { title: issueTitle, body: issueBody } = buildIssueContent(plan)
+
+        // --- 6. Select action ---
+        const actionItems = [
+          { label: issueI18n.actionNewIssue[locale], action: 'create' as const },
+          { label: issueI18n.actionAddComment[locale], action: 'comment' as const },
+        ]
+        const selectedAction = await vscode.window.showQuickPick(actionItems, {
+          placeHolder: issueI18n.selectAction[locale],
+        })
+        if (!selectedAction) return
+
+        // --- 7a. Create new issue ---
+        if (selectedAction.action === 'create') {
+          const result = await provider.createIssue(repo, issueTitle, issueBody, token)
+          const action = await vscode.window.showInformationMessage(
+            issueI18n.createdSuccess[locale](result.number),
+            issueI18n.openInBrowser[locale],
+          )
+          if (action) {
+            vscode.env.openExternal(vscode.Uri.parse(result.url))
+          }
+          return
+        }
+
+        // --- 7b. Add comment to existing issue ---
+        const issueListResult = await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: issueI18n.fetchingIssues[locale],
+            cancellable: false,
+          },
+          () => provider.listOpenIssues(repo, token),
+        )
+
+        if (issueListResult.truncated) {
+          vscode.window.showInformationMessage(issueI18n.truncatedWarning[locale])
+        }
+
+        if (issueListResult.issues.length === 0) {
+          vscode.window.showInformationMessage(issueI18n.noOpenIssues[locale])
+          return
+        }
+
+        const selectedIssue = await vscode.window.showQuickPick(
+          issueListResult.issues.map((issue) => ({
+            label: `#${issue.number} ${issue.title}`,
+            detail: issue.url,
+            issue,
+          })),
+          { placeHolder: issueI18n.selectIssue[locale] },
+        )
+        if (!selectedIssue) return
+
+        const commentResult = await provider.addComment(
+          repo,
+          selectedIssue.issue.number,
+          issueBody,
+          token,
+        )
+        const action = await vscode.window.showInformationMessage(
+          issueI18n.commentSuccess[locale](selectedIssue.issue.number),
+          issueI18n.openInBrowser[locale],
+        )
+        if (action) {
+          vscode.env.openExternal(vscode.Uri.parse(commentResult.url))
+        }
+      } catch (err) {
+        // Catch-all: PlanManagerError gets code-based UI, others get generic showErrorMessage
+        console.error('Plan Manager: addToIssue failed:', err)
+        if (err instanceof PlanManagerError) {
+          switch (err.code) {
+            case 'GIT_REMOTE_NOT_FOUND':
+            case 'UNSUPPORTED_REMOTE':
+              vscode.window.showWarningMessage(err.message)
+              break
+            case 'INVALID_GITLAB_BASE_URL':
+            case 'AUTH_INVALID':
+            case 'API_REQUEST_FAILED':
+            case 'NETWORK_ERROR':
+            default:
+              vscode.window.showErrorMessage(err.message)
+              break
+          }
+        } else {
+          const message = err instanceof Error ? err.message : String(err)
+          vscode.window.showErrorMessage(message)
+        }
+      }
     }),
   )
 
@@ -431,6 +681,30 @@ function buildClaudePrompt(plan: PlanFile): string {
         '- Check off tasks as you complete them',
         '- Follow the plan\'s structure and guidance',
       ].join('\n')
+}
+
+/**
+ * Build title and body for Issue creation from a plan.
+ *
+ * - Claude plan: H1 as title, raw markdown body
+ * - Cursor plan: frontmatter.name as title (fallback to H1 / fileName),
+ *   body is converted via convertCursorToClaude()
+ */
+function buildIssueContent(plan: PlanFile): { title: string; body: string } {
+  if (plan.source === PlanSource.Cursor) {
+    const body = convertCursorToClaude(plan)
+    const title = plan.frontmatter?.name
+      || extractH1(body)
+      || plan.fileName.replace(/\.plan\.md$|\.md$/, '')
+    return { title, body }
+  }
+
+  // Claude plan
+  const body = plan.markdownBody
+  const title = extractH1(body)
+    || plan.name
+    || plan.fileName.replace(/\.md$/, '')
+  return { title, body }
 }
 
 function shellEscape(s: string): string {

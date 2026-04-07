@@ -1,0 +1,6 @@
+{
+  "commands.addToIssue.title": "Issue に追加",
+  "commands.setGitHubToken.title": "GitHub トークン (PAT) を設定",
+  "commands.setGitLabToken.title": "GitLab トークン (PAT) を設定",
+  "settings.gitlabBaseUrl.description": "セルフホスト GitLab のベース URL（HTTPS のみ）。例: https://gitlab.example.com"
+}

@@ -81,6 +81,7 @@ const translations = {
     claude: 'Claude',
     copy: 'Copy',
     reveal: 'Reveal',
+    addToIssue: 'Add to Issue',
   },
   ja: {
     searchReset: '検索リセット',
@@ -98,6 +99,7 @@ const translations = {
     claude: 'Claude',
     copy: 'コピー',
     reveal: 'フォルダ表示',
+    addToIssue: 'Issue に追加',
   },
 } as const
 
@@ -516,6 +518,7 @@ function createPlanCard(plan: SerializedPlanFile): HTMLElement {
   const utilButtons: Array<{ action: string; tip: string; icon: string }> = [
     { action: 'copyPath', tip: t('copy'), icon: 'codicon-files' },
     { action: 'revealInOS', tip: t('reveal'), icon: 'codicon-folder-opened' },
+    { action: 'addToIssue', tip: t('addToIssue'), icon: 'codicon-issue-opened' },
   ]
 
   for (const btnDef of utilButtons) {

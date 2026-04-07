@@ -2,7 +2,7 @@
   "name": "plan-manager",
   "displayName": "Plan Manager | Cursor ⇄ Claude",
   "description": "Browse, search & convert Claude Code / Cursor plan files — plan viewer with Deep Link & one-click AI chat",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "pacific-system",
   "icon": "img/icon.png",
   "license": "MIT",
@@ -120,6 +120,21 @@
         "command": "planManager.revealInOS",
         "title": "Reveal in File Explorer",
         "category": "Plan Manager"
+      },
+      {
+        "command": "planManager.addToIssue",
+        "title": "%commands.addToIssue.title%",
+        "category": "Plan Manager"
+      },
+      {
+        "command": "planManager.setGitHubToken",
+        "title": "%commands.setGitHubToken.title%",
+        "category": "Plan Manager"
+      },
+      {
+        "command": "planManager.setGitLabToken",
+        "title": "%commands.setGitLabToken.title%",
+        "category": "Plan Manager"
       }
     ],
     "menus": {
@@ -157,6 +172,11 @@
           "minimum": 5,
           "maximum": 300,
           "description": "Auto-refresh interval in seconds"
+        },
+        "planManager.gitlabBaseUrl": {
+          "type": "string",
+          "default": "https://gitlab.com",
+          "description": "%settings.gitlabBaseUrl.description%"
         },
         "planManager.sortBy": {
           "type": "string",
