@@ -5,6 +5,13 @@ All notable changes to "Plan Manager" will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2026-04-08
+
+### Fixed
+
+- ワークスペースの子ディレクトリ（2階層まで）に存在する Git リポジトリが検出されない問題を修正
+  Fix nested Git repositories (up to 2 levels deep) not being detected under workspace folders
+
 ## [0.1.5] - 2026-04-08
 
 ### Added

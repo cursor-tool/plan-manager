@@ -42,6 +42,41 @@ export async function findGitRoot(startPath: string): Promise<string | null> {
   }
 }
 
+/**
+ * Recursively scan child directories (up to `maxDepth` levels) for `.git`.
+ * Stops descending into a directory once a `.git` is found there.
+ */
+async function scanChildGitRoots(
+  dir: string,
+  maxDepth: number,
+  collect: (gitRoot: string) => Promise<void>,
+): Promise<void> {
+  if (maxDepth <= 0) return
+
+  let entries: fs.Dirent[]
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true })
+  } catch {
+    return
+  }
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue
+    // Skip hidden dirs (except .git itself is checked below) and node_modules
+    if (entry.name.startsWith('.') || entry.name === 'node_modules') continue
+
+    const child = path.join(dir, entry.name)
+    const gitPath = path.join(child, '.git')
+
+    if (fs.existsSync(gitPath)) {
+      await collect(child)
+      // Don't descend further into this git repo
+    } else {
+      await scanChildGitRoots(child, maxDepth - 1, collect)
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Git config reading
 // ---------------------------------------------------------------------------
@@ -273,7 +308,7 @@ export async function detectRepoCandidates(
     // Plan file path may not exist on disk
   }
 
-  // 2. Workspace folders
+  // 2. Workspace folders — check the folder itself and shallow children (max 2 levels)
   if (workspaceFolders) {
     for (const folder of workspaceFolders) {
       try {
@@ -283,6 +318,13 @@ export async function detectRepoCandidates(
         }
       } catch {
         // Skip unreadable workspace folders
+      }
+
+      // Scan child directories for nested git repos (depth 1-2)
+      try {
+        await scanChildGitRoots(folder.uri.fsPath, 2, collectFromRoot)
+      } catch {
+        // Skip unreadable children
       }
     }
   }
